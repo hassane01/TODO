@@ -7,11 +7,12 @@ const {
     updateTodo,
     deleteTodo,
 } = require('../controllers/todoController');
+const { protect } = require('../middleware/authMiddleware');
 
 // Routes for /api/todos
-router.route('/').get(getTodos).post(createTodo);
+router.route('/').get(protect, getTodos).post(protect, createTodo);
 
 // Routes for /api/todos/:id
-router.route('/:id').get(getTodoById).put(updateTodo).delete(deleteTodo);
+router.route('/:id').get(protect, getTodoById).put(protect, updateTodo).delete(protect, deleteTodo);
 
 module.exports = router;
