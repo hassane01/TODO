@@ -9,12 +9,35 @@ import Header from './components/Header'; // Import Header
 import ProtectedRoute from './components/ProtectedRoute'; // Import ProtectedRoute
 import AuthContext from './context/AuthContext'; // Import AuthContext
 import './App.css';
+import LongTaskMonitor from '../LongTaskMonitor';
 
 function App() {
   const [todos, setTodos] = useState([]);
   const { user } = useContext(AuthContext); // Get user from AuthContext
 
+  
+
+
+  useEffect(() => {
+    // Run only on client
+    if (import.meta.env.DEV) {
+      const [navigationTiming] = performance.getEntriesByType("navigation");
+
+      if (navigationTiming instanceof PerformanceNavigationTiming) {
+        const pageLoadTime =
+          navigationTiming.domContentLoadedEventEnd - navigationTiming.startTime;
+
+        console.log("DOM Content Loaded Time:", pageLoadTime, "ms");
+        console.log("DNS lookup:", navigationTiming.domainLookupEnd - navigationTiming.domainLookupStart, "ms");
+        console.log("TTFB:", navigationTiming.responseStart - navigationTiming.requestStart, "ms");
+      }
+    }
+  }, []);
+
+ 
+
   const fetchTodos = useCallback(async () => {
+    const start = performance.now()
     if (!user) {
       console.log('No user, skipping fetch');
       return;
@@ -36,6 +59,9 @@ function App() {
     } catch (error) {
       console.error('Failed to fetch todos:', error);
     }
+    const end  = performance.now()
+    console.log(`execution time is : ${end - start}ms`);
+    
   }, [user]);
 
   useEffect(() => {
@@ -44,6 +70,7 @@ function App() {
 
   return (
     <>
+    {import.meta.env.DEV && <LongTaskMonitor/>}
       <Router>
         <div className="container">
           <Header /> {/* Add Header here */}
@@ -52,7 +79,7 @@ function App() {
               <ProtectedRoute>
                 <div className="App">
                   <h1>Todo List</h1>
-                  <TodoForm fetchTodos={fetchTodos} />
+                  <TodoForm setTodos={setTodos} />
                   <TodoList todos={todos} fetchTodos={fetchTodos} />
                 </div>
               </ProtectedRoute>

@@ -2,7 +2,7 @@ import { useState, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 
-const TodoForm = ({ fetchTodos }) => {
+const TodoForm = ({ setTodos }) => {
   const [newTodo, setNewTodo] = useState('');
   const { user } = useContext(AuthContext);
 
@@ -25,10 +25,10 @@ const TodoForm = ({ fetchTodos }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      await axios.post('/api/todos', { title: newTodo }, config);
+      const res = await axios.post('/api/todos', { title: newTodo }, config);
       
       setNewTodo('');
-      fetchTodos(); // Refetch todos to update the list
+      setTodos(previous => [...previous , res.data]); // Refetch todos to update the list
     } catch (error) {
       console.error('Failed to add todo:', error);
     }
