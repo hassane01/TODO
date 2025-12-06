@@ -1,37 +1,16 @@
-import { useState, useContext } from 'react';
-import axios from 'axios';
-import AuthContext from '../context/AuthContext';
+import { useState } from 'react';
+import { useTodos } from '../context/TodoContext';
 
-const TodoForm = ({ setTodos }) => {
+const TodoForm = () => {
   const [newTodo, setNewTodo] = useState('');
-  const { user } = useContext(AuthContext);
+  const { addTodo } = useTodos();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!newTodo.trim()) return;
-    if (!user) {
-      console.error('User not authenticated.');
-      return;
-    }
 
-    if (!user.token) {
-      console.error('Token is missing. User:', user);
-      return;
-    }
-
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const res = await axios.post('/api/todos', { title: newTodo }, config);
-      
-      setNewTodo('');
-      setTodos(previous => [...previous , res.data]); // Refetch todos to update the list
-    } catch (error) {
-      console.error('Failed to add todo:', error);
-    }
+    addTodo({ title: newTodo });
+    setNewTodo('');
   };
 
   return (

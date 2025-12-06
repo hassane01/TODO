@@ -1,60 +1,22 @@
-import { useState, useContext } from 'react';
-import axios from 'axios';
-import AuthContext from '../context/AuthContext';
+import { useState } from 'react';
+import { useTodos } from '../context/TodoContext';
 
-const TodoItem = ({ todo, fetchTodos }) => {
+const TodoItem = ({ todo }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(todo.title);
-  const { user } = useContext(AuthContext);
+  const { deleteTodo, updateTodo } = useTodos();
 
-  const config = {
-    headers: {
-      Authorization: `Bearer ${user ? user.token : ''}`,
-    },
+  const handleDelete = () => {
+    deleteTodo(todo._id);
   };
 
-  const handleDelete = async () => {
-    if (!user) {
-      console.error('User not authenticated.');
-      return;
-    }
-    try {
-      await axios.delete(`/api/todos/${todo._id}`, config);
-      fetchTodos();
-    } catch (error) {
-      console.error('Failed to delete todo', error);
-    }
+  const handleToggleComplete = () => {
+    updateTodo(todo._id, { completed: !todo.completed });
   };
 
-  const handleToggleComplete = async () => {
-    if (!user) {
-      console.error('User not authenticated.');
-      return;
-    }
-    try {
-      await axios.put(`/api/todos/${todo._id}`, {
-        completed: !todo.completed,
-      }, config);
-      fetchTodos();
-    } catch (error) {
-      console.error('Update failed', error);
-    }
-  };
-
-  const handleSave = async () => {
-    if (!user) {
-      console.error('User not authenticated.');
-      return;
-    }
-    try {
-      await axios.put(`/api/todos/${todo._id}`, {
-        title: newTitle,
-      }, config);
-      setIsEditing(false);
-      fetchTodos();
-    } catch (error) {
-      console.error('Failed to save todo', error);
-    }
+  const handleSave = () => {
+    updateTodo(todo._id, { title: newTitle });
+    setIsEditing(false);
   };
 
   return (
@@ -88,4 +50,3 @@ const TodoItem = ({ todo, fetchTodos }) => {
 };
 
 export default TodoItem;
-
