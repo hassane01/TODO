@@ -63,49 +63,33 @@ const getTodoById = asyncHandler(async (req, res) => {
 
 
 const updateTodo = asyncHandler(async (req, res) => {
-    const todo = await Todo.findById(req.params.id);
+    const updatedTodo = await Todo.findOneAndUpdate(
+        { _id: req.params.id, user: req.user.id }, // Atomically find by ID and user
+        req.body,
+        { new: true, runValidators: true }
+    );
 
-    if (!todo) {
+    if (!updatedTodo) {
         res.status(404);
-        throw new Error('Todo not found');
+        // If no todo is found, it's either non-existent or the user is not authorized.
+        // A 404 is a safe and common response for both cases.
+        throw new Error('Todo not found or user not authorized');
     }
-
-    // Make sure the logged in user matches the todo user
-    if (todo.user.toString() !== req.user.id) {
-        res.status(401);
-        throw new Error('User not authorized');
-    }
-
-    const updatedTodo = await Todo.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-    });
 
     res.status(200).json(updatedTodo);
 });
 
 // @desc    Delete a todo
 // @route   DELETE /api/todos/:id
-// @access  Public
-
-
-
-
+// @access  Private
 
 const deleteTodo = asyncHandler(async (req, res) => {
-    const todo = await Todo.findById(req.params.id);
+    const deletedTodo = await Todo.findOneAndDelete({ _id: req.params.id, user: req.user.id });
 
-    if (!todo) {
+    if (!deletedTodo) {
         res.status(404);
-        throw new Error('Todo not found');
+        throw new Error('Todo not found or user not authorized');
     }
-
-    // Make sure the logged in user matches the todo user
-    if (todo.user.toString() !== req.user.id) {
-        res.status(401);
-        throw new Error('User not authorized');
-    }
-
-    await todo.deleteOne(); // Use deleteOne() instead of findByIdAndDelete() for consistency with Mongoose 6+
 
     res.status(200).json({ id: req.params.id });
 });

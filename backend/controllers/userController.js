@@ -68,22 +68,14 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get user data
-// @route   GET /api/users/me
-// @access  Private
-const getMe = asyncHandler(async (req, res) => {
-  res.json({ message: 'User data display' }); // This will be updated later with actual user data
-});
-
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d',
+    expiresIn: '1h',
   });
 };
 
 module.exports = {
   registerUser,
   loginUser,
-  getMe,
 };
