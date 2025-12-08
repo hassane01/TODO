@@ -2,17 +2,19 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
+const { validationResult } = require('express-validator');
 
 // @desc    Register new user
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
     res.status(400);
-    throw new Error('Please add all fields');
+    throw new Error(errors.array().map(err => err.msg).join(', '));
   }
+
+  const { name, email, password } = req.body;
 
   // Check if user exists
   const userExists = await User.findOne({ email });
@@ -50,6 +52,12 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400);
+    throw new Error(errors.array().map(err => err.msg).join(', '));
+  }
+
   const { email, password } = req.body;
 
   // Check for user email

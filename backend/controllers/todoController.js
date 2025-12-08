@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Todo = require('../models/todoModel');
+const { validationResult } = require('express-validator');
 const User = require('../models/userModel'); // Import User model
 
 // @desc    Get all todos
@@ -14,13 +15,13 @@ const getTodos = asyncHandler(async (req, res) => {
 // @route   POST /api/todos
 // @access  Public
 const createTodo = asyncHandler(async (req, res) => {
-    console.log('Creating todo:', req.body, req.user);
-    const { title } = req.body;
-
-    if (!title) {
-        res.status(400);
-        throw new Error('Please add a title');
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400);
+      throw new Error(errors.array().map(err => err.msg).join(', '));
     }
+  
+    const { title } = req.body;
 
     const todo = await Todo.create({
         title,
