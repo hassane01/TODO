@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const { validationResult } = require('express-validator');
+const generateToken = require('../utils/generateToken');
 
 // @desc    Register new user
 // @route   POST /api/users
@@ -75,13 +76,6 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error('Invalid credentials');
   }
 });
-
-// Generate JWT
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '1h',
-  });
-};
 
 module.exports = {
   registerUser,

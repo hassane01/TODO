@@ -1,11 +1,14 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config()
 
+const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorHandler');
+
+// Connect to database
+connectDB();
 
 const app = express();
 
@@ -28,15 +31,13 @@ app.use('/api/users', authLimiter, require('./routes/userRoutes'));
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+// We only want the server to listen when not in a test environment
+// The database connection is now handled by connectDB
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () =>
+    console.log(`Server running on port ${PORT}`)
+  );
+}
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(()=>{
-        app.listen(PORT ,()=> console.log(`Server running on port ${PORT} and connected to MongoDB`));
-    })
-    .catch((eror)=>{
-        console.error('MongoDB connection error:', eror);
-        process.exit(1); // Exit process with failure
-    })
-
-    
+module.exports = app; // Export the app for supertest
