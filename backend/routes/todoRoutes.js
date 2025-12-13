@@ -8,9 +8,17 @@ const {
     deleteTodo,
 } = require('../controllers/todoController');
 const { protect } = require('../middleware/authMiddleware');
+const { body } = require('express-validator');
 
 // Routes for /api/todos
-router.route('/').get(protect, getTodos).post(protect, createTodo);
+router
+  .route('/')
+  .get(protect, getTodos)
+  .post(
+    protect,
+    [body('title', 'Title is required').not().isEmpty()],
+    createTodo
+  );
 
 // Routes for /api/todos/:id
 router.route('/:id').get(protect, getTodoById).put(protect, updateTodo).delete(protect, deleteTodo);

@@ -3,7 +3,7 @@
     "express-validator": "^7.3.1"
   },
   "devDependencies": {
-    "cross-env": "^10.1.0",
+    "cross-env": "^7.0.3",
     "jest": "^30.2.0",
     "supertest": "^7.1.4"
   }
