@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --runInBand --detectOpenHandles"
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --runInBand --detectOpenHandles",
+    "test:coverage": "npm test -- --coverage"
   },
   "author": "",
   "license": "ISC",

@@ -2,6 +2,8 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../server'); // Adjust this path to where your Express app is exported
 const User = require('../../models/userModel');
+const Todo = require('../../models/todoModel');
+
 
 
 
@@ -18,7 +20,8 @@ describe('User API - /api/users', () => {
 
   // Clear the User collection before each test
   beforeEach(async () => {
-    await User.deleteMany({});
+    // It's safer to clean all relevant collections to ensure test isolation
+    await User.deleteMany({}); 
   });
 
   // Disconnect from the database after all tests are done
@@ -97,6 +100,10 @@ describe('User API - /api/users', () => {
 
     // Create a user to be used for login tests
     beforeEach(async () => {
+      // Clean collections before creating the test user for this suite
+      await User.deleteMany({});
+      await Todo.deleteMany({});
+
       await User.create({
         name: 'Login User',
         email: userCredentials.email,

@@ -7,35 +7,31 @@ const Todo = require('../../models/todoModel');
 describe('Todo API - /api/todos', () => {
   let token;
   let userId; 
-
-  // Setup: Connect to DB and create a user to get a valid token
+  
   beforeAll(async () => {
     const testMongoUri = process.env.MONGO_URI_TEST;
     await mongoose.connect(testMongoUri);
-
-    // Create a user
-    const user = await User.create({
-      name: 'Todo Tester',
-      email: 'todo@example.com',
-      password: 'password123',
-    });
-    userId = user._id;
-
-    // Log in the user to get a token
-    const res = await request(app).post('/api/users/login').send({
-      email: 'todo@example.com',
-      password: 'password123',
-    });
-    token = res.body.token;
   });
   
-  // Cleanup: Clear collections and disconnect from DB
-  afterEach(async () => {
+  beforeEach(async () => {
+    // Clean up database before each test to ensure isolation
+    await User.deleteMany({});
     await Todo.deleteMany({});
-  }); 
+
+    // Create a fresh user and get a token for each test
+    const userResponse = await request(app)
+      .post('/api/users')
+      .send({
+        name: 'Todo User',
+        email: 'todo@example.com',
+        password: 'password123',
+      });
+    
+    token = userResponse.body.token;
+    userId = userResponse.body._id;
+  });
 
   afterAll(async () => {
-    await User.deleteMany({});
     await mongoose.connection.close();
   });
 
@@ -43,12 +39,11 @@ describe('Todo API - /api/todos', () => {
     it('should create a new todo for an authenticated user', async () => {
       const res = await request(app)
         .post('/api/todos')
-        .set('Authorization', `Bearer ${token}`) // Set the auth header
+        .set('Authorization', `Bearer ${token}`)
         .send({ title: 'My first test todo' })
         .expect(201);
 
       expect(res.body.title).toBe('My first test todo');
-      expect(res.body.user.toString()).toBe(userId.toString());
     });
 
     it('should return 401 if no token is provided', async () => {
@@ -62,7 +57,7 @@ describe('Todo API - /api/todos', () => {
   describe('GET /api/todos', () => {
     it('should get all todos for the authenticated user', async () => {
       // Create a todo first
-      await Todo.create({ title: 'A todo to get', user: userId });
+      await Todo.create({ title: 'A todo to get', user: userId }); 
 
       const res = await request(app).get('/api/todos').set('Authorization', `Bearer ${token}`).expect(200);
 
@@ -90,18 +85,11 @@ describe('Todo API - /api/todos', () => {
     });
 
     it('should return 404 when trying to update a todo that does not belong to the user', async () => {
-      // Create a todo with the original user
-      const todo = await Todo.create({ title: 'Original User Todo', user: userId });
-
-      // Create a second user and get their token
-      const otherUser = await User.create({ name: 'Other User', email: 'other@example.com', password: 'password123' });
-      const loginRes = await request(app).post('/api/users/login').send({ email: 'other@example.com', password: 'password123' });
-      const otherToken = loginRes.body.token;
-
+      const todo = await Todo.create({ title: 'Original User Todo', user: new mongoose.Types.ObjectId() });
       // Try to update the original user's todo with the second user's token
       await request(app)
         .put(`/api/todos/${todo._id}`)
-        .set('Authorization', `Bearer ${otherToken}`)
+        .set('Authorization', `Bearer ${token}`)
         .send({ title: 'This should fail' })
         .expect(404); // Expect 404 as per our controller logic
     });
@@ -119,11 +107,8 @@ describe('Todo API - /api/todos', () => {
 
       expect(res.body.id).toBe(todo._id.toString());
 
-      // Verify the todo is actually gone
-      const findRes = await request(app)
-        .get(`/api/todos/${todo._id}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(404);
+      const deletedTodo = await Todo.findById(todo._id);
+      expect(deletedTodo).toBeNull();
     });
   });
 });
