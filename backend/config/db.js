@@ -16,7 +16,13 @@ const connectDB = async () => {
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    process.exit(1);
+    // In a test environment, we should throw the error to allow the test suite to fail gracefully.
+    // In other environments, exiting the process is a valid "fail-fast" strategy.
+    if (process.env.NODE_ENV !== 'test') {
+      process.exit(1);
+    } else {
+      throw error; // Re-throw the error in test environment
+    }
   }
 };
 
