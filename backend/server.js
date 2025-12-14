@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config()
@@ -28,6 +29,20 @@ const authLimiter = rateLimit({
 
 app.use('/api/todos', require('./routes/todoRoutes'));
 app.use('/api/users', authLimiter, require('./routes/userRoutes'));
+
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  // Set the build folder for our static assets
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  // For all other GET requests that are not for our API,
+  // send them to the frontend's index.html file.
+  app.get('*', (req, res) =>
+    res.sendFile(
+      path.resolve(__dirname, '../', 'frontend', 'dist', 'index.html')
+    )
+  );
+}
 
 app.use(errorHandler);
 
