@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import { FaEnvelope, FaLock, FaSignInAlt } from 'react-icons/fa';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ function Login() {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
-}));
+    }));
   };
 
   const onSubmit = async (e) => {
@@ -46,46 +47,60 @@ function Login() {
   };
 
   return (
-    <div className="container">
-      <section className="heading">
-        <h1>Login</h1>
-        <p>Please log in to your account</p>
-      </section>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1>
+            <FaSignInAlt style={{ display: 'inline', marginRight: '0.5rem' }} />
+            Welcome Back
+          </h1>
+          <p>Sign in to manage your todos</p>
+        </div>
 
-      <section className="form">
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="auth-form">
           <div className="form-group">
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              name="email"
-              value={email}
-              placeholder="Enter your email"
-              onChange={onChange}
-            />
+            <div className="input-group">
+              <FaEnvelope className="input-icon" />
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email"
+                value={email}
+                placeholder="Enter your email"
+                onChange={onChange}
+                required
+                style={{ paddingLeft: '2.75rem' }}
+              />
+            </div>
           </div>
+
           <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              name="password"
-              value={password}
-              placeholder="Enter password"
-              onChange={onChange}
-            />
+            <div className="input-group">
+              <FaLock className="input-icon" />
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                name="password"
+                value={password}
+                placeholder="Enter your password"
+                onChange={onChange}
+                required
+                style={{ paddingLeft: '2.75rem' }}
+              />
+            </div>
           </div>
-          <div className="form-group">
-            <button type="submit" className="btn btn-block">
-              Submit
-            </button>
-          </div>
+
+          <button type="submit" className="btn btn-primary btn-block">
+            Sign In
+          </button>
         </form>
-        <p>
-          Don't have an account? <Link to="/register">Register</Link>
-        </p>
-      </section>
+
+        <div className="auth-footer">
+          Don't have an account? <Link to="/register">Create one here</Link>
+        </div>
+      </div>
     </div>
   );
 }

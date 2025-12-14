@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTodos } from '../context/TodoContext';
+import { FaEdit, FaTrash, FaSave, FaTimes, FaCheck } from 'react-icons/fa';
 
 const TodoItem = ({ todo }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -15,38 +16,82 @@ const TodoItem = ({ todo }) => {
   };
 
   const handleSave = () => {
-    updateTodo(todo._id, { title: newTitle });
+    if (newTitle.trim()) {
+      updateTodo(todo._id, { title: newTitle });
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setNewTitle(todo.title);
     setIsEditing(false);
   };
 
   return (
-    <li>
-      {isEditing ? (
+    <div className="todo-card slide-in">
+      <div className="todo-checkbox">
         <input
-          type="text"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
+          type="checkbox"
+          id={`todo-${todo._id}`}
+          checked={todo.completed}
+          onChange={handleToggleComplete}
+          className="custom-checkbox"
         />
-      ) : (
-        <span
-          style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
-          onClick={handleToggleComplete}
-        >
-          {todo.title}
-        </span>
-      )}
-      <span style={{ color: 'black' }}>
-        {todo.completed ? 'Completed' : 'pending'}
-      </span>
+        <label htmlFor={`todo-${todo._id}`} className="checkbox-label">
+          <FaCheck className="check-icon" />
+        </label>
+      </div>
 
-      {isEditing ? (
-        <button onClick={handleSave}>Save</button>
-      ) : (
-        <button onClick={() => setIsEditing(true)}>Edit</button>
-      )}
-      <button onClick={handleDelete}>X</button>
-    </li>
+      <div className="todo-content">
+        {isEditing ? (
+          <input
+            type="text"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            className="todo-edit-input"
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSave();
+              if (e.key === 'Escape') handleCancel();
+            }}
+          />
+        ) : (
+          <span
+            className={`todo-title ${todo.completed ? 'completed' : ''}`}
+          >
+            {todo.title}
+          </span>
+        )}
+        
+        <span className={`badge ${todo.completed ? 'badge-success' : 'badge-pending'}`}>
+          {todo.completed ? 'Completed' : 'Pending'}
+        </span>
+      </div>
+
+      <div className="todo-actions">
+        {isEditing ? (
+          <>
+            <button onClick={handleSave} className="btn-icon btn-success" title="Save">
+              <FaSave />
+            </button>
+            <button onClick={handleCancel} className="btn-icon btn-secondary" title="Cancel">
+              <FaTimes />
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => setIsEditing(true)} className="btn-icon btn-edit" title="Edit">
+              <FaEdit />
+            </button>
+            <button onClick={handleDelete} className="btn-icon btn-delete" title="Delete">
+              <FaTrash />
+            </button>
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
 export default TodoItem;
+

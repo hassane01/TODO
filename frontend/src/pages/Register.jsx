@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import { FaUser, FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -53,68 +54,94 @@ function Register() {
   };
 
   return (
-    <div className="container">
-      <section className="heading">
-        <h1>Register</h1>
-        <p>Please create an account</p>
-      </section>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1>
+            <FaUserPlus style={{ display: 'inline', marginRight: '0.5rem' }} />
+            Create Account
+          </h1>
+          <p>Join us and start organizing your tasks</p>
+        </div>
 
-      <section className="form">
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="auth-form">
           <div className="form-group">
-            <input
-              type="text"
-              className="form-control"
-              id="name"
-              name="name"
-              value={name}
-              placeholder="Enter your name"
-              onChange={onChange}
-            />
+            <div className="input-group">
+              <FaUser className="input-icon" />
+              <input
+                type="text"
+                className="form-control"
+                id="name"
+                name="name"
+                value={name}
+                placeholder="Enter your name"
+                onChange={onChange}
+                required
+                style={{ paddingLeft: '2.75rem' }}
+              />
+            </div>
           </div>
+
           <div className="form-group">
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              name="email"
-              value={email}
-              placeholder="Enter your email"
-              onChange={onChange}
-            />
+            <div className="input-group">
+              <FaEnvelope className="input-icon" />
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email"
+                value={email}
+                placeholder="Enter your email"
+                onChange={onChange}
+                required
+                style={{ paddingLeft: '2.75rem' }}
+              />
+            </div>
           </div>
+
           <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              name="password"
-              value={password}
-              placeholder="Enter password"
-              onChange={onChange}
-            />
+            <div className="input-group">
+              <FaLock className="input-icon" />
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                name="password"
+                value={password}
+                placeholder="Enter password"
+                onChange={onChange}
+                required
+                style={{ paddingLeft: '2.75rem' }}
+              />
+            </div>
           </div>
+
           <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              id="password2"
-              name="password2"
-              value={password2}
-              placeholder="Confirm password"
-              onChange={onChange}
-            />
+            <div className="input-group">
+              <FaLock className="input-icon" />
+              <input
+                type="password"
+                className="form-control"
+                id="password2"
+                name="password2"
+                value={password2}
+                placeholder="Confirm password"
+                onChange={onChange}
+                required
+                style={{ paddingLeft: '2.75rem' }}
+              />
+            </div>
           </div>
-          <div className="form-group">
-            <button type="submit" className="btn btn-block">
-              Submit
-            </button>
-          </div>
+
+          <button type="submit" className="btn btn-primary btn-block">
+            Create Account
+          </button>
         </form>
-        <p>
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
-      </section>
+
+        <div className="auth-footer">
+          Already have an account? <Link to="/login">Sign in here</Link>
+        </div>
+      </div>
     </div>
   );
 }

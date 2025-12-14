@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTodos } from '../context/TodoContext';
+import { FaPlus } from 'react-icons/fa';
 
 const TodoForm = () => {
   const [newTodo, setNewTodo] = useState('');
@@ -14,14 +15,17 @@ const TodoForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="todo-form">
       <input
         type="text"
-        placeholder="Add a new todo"
+        placeholder="What needs to be done?"
         value={newTodo}
         onChange={(e) => setNewTodo(e.target.value)}
+        className="todo-input"
       />
-      <button type="submit">Add</button>
+      <button type="submit" className="btn-primary btn-add">
+        <FaPlus /> Add Todo
+      </button>
     </form>
   );
 };

@@ -4,12 +4,24 @@ import { useTodos } from '../context/TodoContext';
 const TodoList = () => {
   const { todos } = useTodos();
 
+  if (todos.length === 0) {
+    return (
+      <div className="empty-state">
+        <p className="empty-message">No todos yet! Add one to get started 🚀</p>
+      </div>
+    );
+  }
+
   return (
-    <ul>
-      {todos.map((todo) => (
-        <TodoItem key={todo._id} todo={todo} />
+    <div className="todo-list-container">
+      {todos.map((todo, index) => (
+        <TodoItem
+          key={todo._id}
+          todo={todo}
+          style={{ animationDelay: `${index * 50}ms` }}
+        />
       ))}
-    </ul>
+    </div>
   );
 };
 
