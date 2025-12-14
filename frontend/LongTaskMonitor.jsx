@@ -34,8 +34,8 @@ function LongTaskMonitor() {
         <p>No long tasks detected yet.</p>
       ) : (
         <ul>
-          {longTasks.map((task, index) => (
-            <li key={index}>
+          {longTasks.map((task) => (
+            <li key={task.startTime}>
               Duration: {task.duration.toFixed(2)} ms, start:{" "}
               {task.startTime.toFixed(2)} ms
             </li>
