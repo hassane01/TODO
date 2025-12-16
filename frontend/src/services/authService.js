@@ -6,13 +6,10 @@ const API_URL = '/api/users';
 const register = async (userData) => {
   try {
     const response = await axios.post(API_URL, userData);
-    const data = response.data;
-    
-    if (!data.token) {
-      throw new Error('No token received from server');
+    if (response.data) {
+      localStorage.setItem('user', JSON.stringify(response.data));
     }
-    
-    return data;
+    return response.data;
   } catch (error) {
     const message = error.response?.data?.message || error.message || 'Registration failed';
     console.error('Register API error:', message);
@@ -23,13 +20,16 @@ const register = async (userData) => {
 // Login user
 const login = async (userData) => {
   try {
-    const response = await axios.post(API_URL + 'login', userData);
+    const response = await axios.post(`${API_URL}/login`, userData);
     const data = response.data;
-    
+
     if (!data.token) {
       throw new Error('No token received from server.');
     }
-    
+
+    if (response.data) {
+      localStorage.setItem('user', JSON.stringify(response.data));
+    }
     return data;
   } catch (error) {
     const message = error.response?.data?.message || error.message || 'Login failed';
@@ -47,7 +47,6 @@ const authService = {
   register,
   logout,
   login,
- 
 };
 
 export default authService;

@@ -8,6 +8,7 @@ function Login() {
     email: '',
     password: '',
   });
+  const [error, setError] = useState('');
 
   const { email, password } = formData;
 
@@ -29,6 +30,7 @@ function Login() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear previous errors on a new submission
     const userData = {
       email,
       password,
@@ -42,7 +44,7 @@ function Login() {
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert(error?.message || 'Invalid credentials');
+      setError(error?.message || 'Invalid credentials');
     }
   };
 
@@ -56,6 +58,12 @@ function Login() {
           </h1>
           <p>Sign in to manage your todos</p>
         </div>
+
+        {error && (
+          <div className="auth-error-message">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={onSubmit} className="auth-form">
           <div className="form-group">
