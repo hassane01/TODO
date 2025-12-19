@@ -9,6 +9,7 @@ function Login() {
     password: '',
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const { email, password } = formData;
 
@@ -31,6 +32,7 @@ function Login() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setError(''); // Clear previous errors on a new submission
+    setIsLoading(true);
     const userData = {
       email,
       password,
@@ -45,6 +47,8 @@ function Login() {
     } catch (error) {
       console.error('Login error:', error);
       setError(error?.message || 'Invalid credentials');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,8 +104,8 @@ function Login() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary btn-block">
-            Sign In
+          <button type="submit" className="btn btn-primary btn-block" disabled={isLoading}>
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 

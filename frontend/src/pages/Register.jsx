@@ -10,6 +10,8 @@ function Register() {
     password: '',
     password2: '',
   });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const { name, email, password, password2 } = formData;
 
@@ -31,9 +33,13 @@ function Register() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
+
     if (password !== password2) {
       alert('Passwords do not match');
+      setError('Passwords do not match');
     } else {
+      setIsLoading(true);
       const userData = {
         name,
         email,
@@ -49,6 +55,9 @@ function Register() {
       } catch (error) {
         console.error('Registration error:', error);
         alert(error?.message || 'Registration failed');
+        setError(error?.message || 'Registration failed');
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -63,6 +72,12 @@ function Register() {
           </h1>
           <p>Join us and start organizing your tasks</p>
         </div>
+
+        {error && (
+          <div className="auth-error-message">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={onSubmit} className="auth-form">
           <div className="form-group">
@@ -135,6 +150,9 @@ function Register() {
 
           <button type="submit" className="btn btn-primary btn-block">
             Create Account
+          <button type="submit" className="btn btn-primary btn-block" disabled={isLoading}>
+            {isLoading ? 'Creating Account...' : 'Create Account'}
+          </button>
           </button>
         </form>
 
