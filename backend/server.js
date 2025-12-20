@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config()
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorHandler');
