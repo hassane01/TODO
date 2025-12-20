@@ -148,12 +148,11 @@ function Register() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary btn-block">
-            Create Account
+          
           <button type="submit" className="btn btn-primary btn-block" disabled={isLoading}>
             {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
-          </button>
+          
         </form>
 
         <div className="auth-footer">
