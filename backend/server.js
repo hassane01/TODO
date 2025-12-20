@@ -27,24 +27,20 @@ const authLimiter = rateLimit({
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
+// Routes
+app.use('/api/todos', require('./routes/todoRoutes'));
+app.use('/api/users', authLimiter, require('./routes/userRoutes'));
+
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
   // Set the build folder for our static assets
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-  // API routes must be defined before the catch-all route
-  app.use('/api/todos', require('./routes/todoRoutes'));
-  app.use('/api/users', authLimiter, require('./routes/userRoutes'));
 
   // For all other GET requests that are not for our API,
   // send them to the frontend's index.html file.
   app.get('*', (req, res) =>
     res.sendFile(path.resolve(__dirname, '../', 'frontend', 'dist', 'index.html'))
   );
-} else {
-  // In development, just define the API routes
-  app.use('/api/todos', require('./routes/todoRoutes'));
-  app.use('/api/users', authLimiter, require('./routes/userRoutes'));
 }
 
 app.use(errorHandler);
